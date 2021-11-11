@@ -52,5 +52,12 @@ class DataRepository(
         }
     }
 
-    fun get(date: LocalDate): HolidayBean? = holidayData[holidayIndex[date.year - 2000][date.monthValue][date.dayOfMonth]]
+    fun get(date: LocalDate): HolidayBean? =
+        holidayData[holidayIndex[date.year - 2000][date.monthValue][date.dayOfMonth]]
+
+    fun getWholeMonth(date: LocalDate): List<HolidayBean> =
+        holidayIndex[date.year - 2000][date.monthValue].map { holidayData[it] }.filterNotNull().toList()
+
+    fun getWholeYear(date: LocalDate): List<HolidayBean> =
+        holidayIndex[date.year - 2000].flatMap { it.toList() }.mapNotNull { holidayData[it] }.toList()
 }

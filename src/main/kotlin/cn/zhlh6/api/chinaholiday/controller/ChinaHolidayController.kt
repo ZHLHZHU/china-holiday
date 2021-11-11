@@ -25,16 +25,26 @@ class ChinaHolidayController(
         return holiday ?: HolidayBean(today, false, "工作日")
     }
 
-    @GetMapping("/holiday/{year}/{month}/{day}")
-    fun holiday(@PathVariable year: Int, @PathVariable month: Int, @PathVariable day: Int): HolidayBean {
+    @GetMapping("/holiday/{year}/{month}/{day}", "/holiday/{year}/{month}", "/holiday/{year}")
+    fun holiday(
+        @PathVariable year: Int,
+        @PathVariable(required = false) month: Int?,
+        @PathVariable(required = false) day: Int?
+    ): List<HolidayBean> {
+        if (month == null) {
+            return dataRepository.getWholeYear(LocalDate.of(year, 1, 1))
+        }
+        if (day == null) {
+            return dataRepository.getWholeMonth(LocalDate.of(year, month, 1))
+        }
         val date = LocalDate.of(year, month, day)
 
-        dataRepository.get(date)?.let { return it }
+        dataRepository.get(date)?.let { return listOf(it) }
 
         if (date.dayOfWeek == DayOfWeek.SATURDAY || date.dayOfWeek == DayOfWeek.SUNDAY) {
-            return HolidayBean(date, true, "周末")
+            return listOf(HolidayBean(date, true, "周末"))
         }
-        return HolidayBean(date, false, "工作日")
+        return listOf(HolidayBean(date, false, "工作日"))
     }
 
 }
