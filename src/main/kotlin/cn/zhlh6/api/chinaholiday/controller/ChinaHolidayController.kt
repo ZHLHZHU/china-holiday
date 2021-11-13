@@ -18,26 +18,20 @@ import java.time.LocalDate
 class ChinaHolidayController(
     val dataRepository: DataRepository
 ) {
-    @GetMapping("/holiday/")
-    fun holidayToday(): HolidayBean {
-        val today = LocalDate.now()
-        val holiday = dataRepository.get(today)
-        return holiday ?: HolidayBean(today, false, "工作日")
-    }
 
-    @GetMapping("/holiday/{year}/{month}/{day}", "/holiday/{year}/{month}", "/holiday/{year}")
+    @GetMapping("/holiday/{year}/{month}/{day}", "/holiday/{year}/{month}", "/holiday/{year}", "/holiday")
     fun holiday(
-        @PathVariable year: Int,
+        @PathVariable(required = false) year: Int?,
         @PathVariable(required = false) month: Int?,
         @PathVariable(required = false) day: Int?
     ): List<HolidayBean> {
         if (month == null) {
-            return dataRepository.getWholeYear(LocalDate.of(year, 1, 1))
+            return dataRepository.getWholeYear(LocalDate.of(year ?: 0, 1, 1))
         }
         if (day == null) {
-            return dataRepository.getWholeMonth(LocalDate.of(year, month, 1))
+            return dataRepository.getWholeMonth(LocalDate.of(year ?: 0, month, 1))
         }
-        val date = LocalDate.of(year, month, day)
+        val date = LocalDate.of(year ?: 0, month, day)
 
         dataRepository.get(date)?.let { return listOf(it) }
 
@@ -46,5 +40,6 @@ class ChinaHolidayController(
         }
         return listOf(HolidayBean(date, false, "工作日"))
     }
+
 
 }

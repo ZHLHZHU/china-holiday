@@ -46,8 +46,8 @@ class DataRepository(
                     element.get("holiday").asBoolean(),
                     element.get("name").asText(),
                 )
-                holidayData[dateIndex++] = holidayBean
-                holidayIndex[date.year - 2000][date.monthValue][date.dayOfMonth] = dateIndex
+                holidayData[dateIndex] = holidayBean
+                holidayIndex[date.year - 2000][date.monthValue][date.dayOfMonth] = dateIndex++
             }
         }
     }
